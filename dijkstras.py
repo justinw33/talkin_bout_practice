@@ -1,13 +1,14 @@
 import math
+
 class Node(object):
 
-	def __init__(self, vertex, weight):
+	def __init__(self, vertex_id, weight):
 
-		self.vertex = vertex;
+		self.vertex_id = vertex_id;
 		self.weight = weight
 
 	def __str__(self):
-		return "[vertex: {}, weight {}]".format(self.vertex, self.weight)
+		return "[vertex_id: {}, weight {}]".format(self.vertex_id, self.weight)
 
 	def __repr__(self):
 		return str(self)
@@ -19,41 +20,62 @@ class BinaryMinHeapMap(object):
 		self.map = {}
 		self.heap = Heap()
 
-	def containsVertex(self, vertex):
-		if vertex in self.map:
-			return True
-		return False
+	# def containsVertex(self, vertex_id):
+	# 	if vertex_id in self.map:
+	# 		return True
+	# 	return False
 
-	def addToHeap(self, vertex, weight):
-		if vertex in self.map:
+	def addToHeap(self, vertex_id, weight):
+		if vertex_id in self.map:
 			return
 		else:
-			n = Node(vertex, weight)
-			self.map[vertex] = n
+			n = Node(vertex_id, weight)
+			self.map[vertex_id] = n
 			self.heap.addToHeap(n)
 
 		self.size += 1
 
-	def setVertex(self, vertex, weight):
-		if vertex in self.map:
-			n = self.map[vertex]
+	def setVertex(self, vertex_id, weight):
+		if vertex_id in self.map:
+			n = self.map[vertex_id]
 			n.weight = weight
 		else:
-			self.addToHeap(vertex, weight)
+			self.addToHeap(vertex_id, weight)
+		self.heap.rebuildHeap()
 
 	def extractMin(self):
 		if self.size == 0:
 			return
 
 		n = self.heap.getMin()
-		del self.map[n.vertex]
+		del self.map[n.vertex_id]
 		self.size -= 1
+		return n
 
-		# def decreaseKey(self, vertex, weight):
-		# def getKeyWeight(self, vertex):
+	def getVertexWeight(self, vertex_id):
+
+		if vertex_id in self.map:
+			v = self.map[vertex_id]
+			return v.weight
+
+		return None
+
+	def vertexExist(self, vertex_id):
+		if vertex_id in self.map:
+			return True
+
+		return False
 
 	def __str__(self):
-		return "map: {}, heap {}]".format(self.map, self.heap)
+		# return "map: {}, heap {}]".format(self.map, self.heap)
+		print "map"
+		for vertex in self.map:
+			print "{}".format(self.map[vertex])
+
+		print "heap"
+		print "{}".format(self.heap)
+
+		return ""
 
 	def __repr__(self):
 		return str(self)
@@ -77,6 +99,7 @@ class Heap(object):
 		self.swap(0, self.size - 1)
 		self.size -= 1
 		self.percolateDown(0)
+		del self.heap[-1]
 
 		return min_node
 
@@ -103,13 +126,14 @@ class Heap(object):
 		right_child = (current * 2) + 2
 
 		current_weight = self.heap[current].weight
-
+		print "current:{}, left_child:{}, right_child:{}, current_weight:{}, size:{}".format(current, left_child, right_child, current_weight, self.size)
 		while (right_child < self.size) and ((current_weight > self.heap[left_child].weight) or (current_weight > self.heap[right_child].weight)):
+			
 			if self.heap[left_child].weight > self.heap[right_child].weight:
 				self.swap(right_child, current)
 				current = right_child
 
-			else: #self.heap[left_child].weight < self.heap[right_child].weight:
+			else: 
 				self.swap(left_child, current)
 				current = left_child
 
@@ -118,24 +142,25 @@ class Heap(object):
 
 
 		if left_child < self.size and self.heap[left_child].weight < self.heap[current].weight:
-			self.swap[left_child, current]
+			self.swap(left_child, current)
 		
-		del self.heap[-1]
+	def rebuildHeap(self):
+		parent = int(math.ceil(self.size/self.DIVISOR)) - 1
+		for x in range(parent, -1, -1):
+			self.percolateDown(x)
+
+		return
 
 	def __str__(self):
 		return "{}".format(self.heap)
 
+# # testing
+# binaryMinHeapMap = BinaryMinHeapMap()
+# binaryMinHeapMap.addToHeap(1,10)
+# binaryMinHeapMap.addToHeap(2, 5)
+# binaryMinHeapMap.extractMin()
+# n = binaryMinHeapMap.getVertexWeight(1)
 
-
-
-
-
-
-# testing
-binaryMinHeapMap = BinaryMinHeapMap()
-binaryMinHeapMap.addToHeap(1,10)
-binaryMinHeapMap.addToHeap(2, 5)
-
-print binaryMinHeapMap
+# print binaryMinHeapMap
 
 
